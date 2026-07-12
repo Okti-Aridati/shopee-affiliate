@@ -1,0 +1,9 @@
+{
+  "name": "shopee-affiliate-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-data.js",
+    "dev": "npx serve public -l 3000 --cors"
+  }
+}

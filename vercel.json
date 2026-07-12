@@ -1,0 +1,8 @@
+{
+  "buildCommand": "node scripts/build-data.js",
+  "outputDirectory": "public",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shopee Affiliate Products</title>
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0f0f13;
+  --surface: #1a1a24;
+  --surface2: #22222e;
+  --border: #2a2a3a;
+  --text: #e8e8f0;
+  --text2: #8888a0;
+  --accent: #ee4d2d;
+  --accent2: #ff6b4a;
+  --green: #00c853;
+  --orange: #ff9100;
+  --radius: 12px;
+  --shadow: 0 2px 12px rgba(0,0,0,.3);
+  --transition: .2s ease;
+}
+html { font-size: 15px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+a { color: inherit; text-decoration: none; }
+
+/* ===== LAYOUT ===== */
+.container { max-width: 1440px; margin: 0 auto; padding: 0 20px; }
+
+/* ===== HEADER ===== */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+.logo-icon {
+  width: 34px;
+  height: 34px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.logo span { color: var(--text2); font-weight: 400; font-size: .9rem; }
+.stats-bar {
+  display: flex;
+  gap: 20px;
+  font-size: .85rem;
+  color: var(--text2);
+}
+.stats-bar strong { color: var(--text); font-weight: 600; }
+.search-wrap {
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+}
+.search-wrap input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: .9rem;
+  outline: none;
+  transition: border var(--transition);
+}
+.search-wrap input:focus { border-color: var(--accent); }
+.search-wrap input::placeholder { color: var(--text2); }
+
+/* ===== FILTERS ===== */
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0;
+  flex-wrap: wrap;
+}
+.filter-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  font-size: .8rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.filter-btn:hover { border-color: var(--accent); color: var(--text); }
+.filter-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.sort-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: .82rem;
+  outline: none;
+  cursor: pointer;
+  margin-left: auto;
+}
+.store-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.store-chip {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: .75rem;
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition);
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.store-chip:hover { border-color: var(--accent); color: var(--text); }
+.store-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ===== PRODUCT GRID ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+  padding: 0 0 40px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: transform var(--transition), border-color var(--transition);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.card:hover {
+  border-color: var(--accent2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.card-thumb {
+  width: 100%;
+  height: 160px;
+  background: var(--surface2);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: var(--text2);
+  overflow: hidden;
+  position: relative;
+}
+.card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.card-body { flex: 1; }
+.card-name {
+  font-size: .88rem;
+  font-weight: 500;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 10px;
+  min-height: 2.5em;
+}
+.card-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-size: .78rem;
+  margin-bottom: 12px;
+}
+.meta-item {
+  background: var(--surface2);
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.meta-label { color: var(--text2); font-size: .7rem; }
+.meta-value { color: var(--text); font-weight: 600; margin-top: 2px; }
+.meta-value.green { color: var(--green); }
+.meta-value.orange { color: var(--orange); }
+.card-store {
+  font-size: .75rem;
+  color: var(--text2);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card-store::before {
+  content: '🏪';
+  font-size: .8rem;
+}
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+.btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--accent2); }
+.btn-copy {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-copy:hover { background: var(--border); }
+.btn-copy.copied { background: var(--green); border-color: var(--green); color: #fff; }
+
+/* ===== EMPTY STATE ===== */
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text2);
+  grid-column: 1 / -1;
+}
+.empty-icon { font-size: 3rem; margin-bottom: 16px; }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--green);
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: .85rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: all .3s ease;
+  pointer-events: none;
+  z-index: 999;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .header-inner { flex-direction: column; align-items: stretch; }
+  .search-wrap { max-width: 100%; }
+  .stats-bar { font-size: .78rem; gap: 12px; }
+  .grid { grid-template-columns: 1fr; }
+  .filters { flex-direction: column; align-items: stretch; }
+  .sort-select { margin-left: 0; }
+  .store-chips { max-height: 80px; overflow-y: auto; }
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="container header-inner">
+    <div class="logo">
+      <div class="logo-icon">🛍️</div>
+      <div>
+        <div>Shopee Affiliate</div>
+        <span>Produk Afiliasi</span>
+      </div>
+    </div>
+    <div class="stats-bar" id="statsBar">
+      <span>📦 <strong id="totalCount">0</strong> produk</span>
+      <span>🏪 <strong id="storeCount">0</strong> toko</span>
+      <span>💎 komisi tertinggi <strong id="topCommission">-</strong></span>
+    </div>
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="🔍 Cari produk..." autocomplete="off">
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+<!-- FILTERS -->
+<div class="filters">
+  <div class="filter-group" id="priceFilter">
+    <button class="filter-btn active" data-value="all">Semua</button>
+    <button class="filter-btn" data-value="under50">&lt; Rp50RB</button>
+    <button class="filter-btn" data-value="50-200">Rp50-200RB</button>
+    <button class="filter-btn" data-value="200-500">Rp200-500RB</button>
+    <button class="filter-btn" data-value="over500">&gt; Rp500RB</button>
+  </div>
+  <select class="sort-select" id="sortSelect">
+    <option value="default">Urut: Default</option>
+    <option value="price-asc">Harga ↑</option>
+    <option value="price-desc">Harga ↓</option>
+    <option value="sales-desc">Penjualan Tertinggi</option>
+    <option value="commission-desc">Komisi Tertinggi</option>
+    <option value="name-asc">A-Z</option>
+  </select>
+</div>
+
+<div class="store-chips" id="storeChips"></div>
+
+<!-- GRID -->
+<div class="grid" id="productGrid"></div>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Link disalin!</div>
+
+<script>
+// ===== DATA =====
+let allProducts = [];
+let filteredProducts = [];
+let activeStore = 'all';
+
+// ===== PARSE INDONESIAN NUMBERS =====
+function parseIDNumber(str) {
+  if (!str) return 0;
+  const s = str.replace(/[^0-9, RBJTK.]/g, '').trim();
+  let num = parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
+  if (str.includes('JT')) num *= 1_000_000;
+  else if (str.includes('RB')) num *= 1_000;
+  else if (str.includes('K')) num *= 1_000;
+  return num;
+}
+
+function parseCommission(str) {
+  if (!str) return 0;
+  const s = str.replace(/[^0-9,]/g, '').replace('.', '').replace(',', '');
+  return parseInt(s) || 0;
+}
+
+function parseSales(str) {
+  if (!str) return 0;
+  const s = str.replace(/[^0-9, RBJTK+]/g, '').trim();
+  let num = parseFloat(s.replace(',', '.').replace(/[+]/g, '')) || 0;
+  if (str.includes('JT')) num *= 1_000_000;
+  else if (str.includes('RB')) num *= 1_000;
+  else if (str.includes('K')) num *= 1_000;
+  return num;
+}
+
+function formatSales(str) {
+  return str;
+}
+
+function formatPrice(str) {
+  return 'Rp' + str;
+}
+
+function formatCommission(str) {
+  return str;
+}
+
+// ===== STORE NAMES =====
+function cleanStore(name) {
+  return name.replace(/\u00a0/g, ' ').trim();
+}
+
+// ===== LOAD DATA =====
+async function loadData() {
+  try {
+    const res = await fetch('data/products.json');
+    allProducts = await res.json();
+    allProducts.forEach(p => {
+      p.store = cleanStore(p.store);
+      p._priceNum = parseIDNumber(p.price);
+      p._commissionNum = parseCommission(p.commission);
+      p._salesNum = parseSales(p.sales);
+    });
+    render();
+  } catch (e) {
+    document.getElementById('productGrid').innerHTML =
+      '<div class="empty"><div class="empty-icon">⚠️</div><p>Gagal muat data. Coba refresh.</p></div>';
+  }
+}
+
+// ===== RENDER =====
+function render() {
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  const priceFilter = document.querySelector('#priceFilter .active')?.dataset?.value || 'all';
+  const sort = document.getElementById('sortSelect').value;
+
+  filteredProducts = allProducts.filter(p => {
+    // Search
+    if (search && !p.name.toLowerCase().includes(search) && !p.store.toLowerCase().includes(search)) return false;
+    // Store filter
+    if (activeStore !== 'all' && p.store !== activeStore) return false;
+    // Price filter
+    if (priceFilter !== 'all') {
+      const n = p._priceNum;
+      if (priceFilter === 'under50' && (n >= 50000 || n === 0)) return false;
+      if (priceFilter === '50-200' && (n < 50000 || n >= 200000)) return false;
+      if (priceFilter === '200-500' && (n < 200000 || n >= 500000)) return false;
+      if (priceFilter === 'over500' && n < 500000) return false;
+    }
+    return true;
+  });
+
+  // Sort
+  const sorted = [...filteredProducts];
+  switch (sort) {
+    case 'price-asc': sorted.sort((a,b) => a._priceNum - b._priceNum); break;
+    case 'price-desc': sorted.sort((a,b) => b._priceNum - a._priceNum); break;
+    case 'sales-desc': sorted.sort((a,b) => b._salesNum - a._salesNum); break;
+    case 'commission-desc': sorted.sort((a,b) => b._commissionNum - a._commissionNum); break;
+    case 'name-asc': sorted.sort((a,b) => a.name.localeCompare(b.name)); break;
+  }
+
+  // Stats
+  const stores = [...new Set(allProducts.map(p => p.store))].sort();
+  document.getElementById('totalCount').textContent = allProducts.length;
+  document.getElementById('storeCount').textContent = stores.length;
+  const topComm = [...allProducts].sort((a,b) => b._commissionNum - a._commissionNum)[0];
+  if (topComm) document.getElementById('topCommission').textContent = topComm.commission;
+
+  // Store chips
+  const chipContainer = document.getElementById('storeChips');
+  chipContainer.innerHTML =
+    '<span class="store-chip' + (activeStore === 'all' ? ' active' : '') + '" data-store="all">Semua Toko</span>' +
+    stores.map(s =>
+      '<span class="store-chip' + (activeStore === s ? ' active' : '') + '" data-store="' + s.replace(/"/g, '&quot;') + '">' + s + '</span>'
+    ).join('');
+
+  // Grid
+  const grid = document.getElementById('productGrid');
+  if (sorted.length === 0) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><p>Tidak ada produk ditemukan</p></div>';
+    return;
+  }
+
+  grid.innerHTML = sorted.map(p => `
+    <div class="card">
+      <div class="card-thumb" style="background: ${getColor(p.store)};">
+        ${p.name.charAt(0).toUpperCase()}
+      </div>
+      <div class="card-body">
+        <div class="card-name" title="${escHtml(p.name)}">${escHtml(p.name)}</div>
+        <div class="card-store">${escHtml(p.store)}</div>
+        <div class="card-meta">
+          <div class="meta-item">
+            <div class="meta-label">💰 Harga</div>
+            <div class="meta-value orange">${formatPrice(p.price)}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">📊 Terjual</div>
+            <div class="meta-value">${formatSales(p.sales)}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">💎 Komisi</div>
+            <div class="meta-value green">${formatCommission(p.commission)}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">🔗 ID</div>
+            <div class="meta-value" style="font-size:.7rem;overflow:hidden;text-overflow:ellipsis">${p.id}</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <a href="${p.link}" target="_blank" rel="noopener" class="btn btn-primary">🛒 Beli</a>
+        <button class="btn btn-copy" data-link="${p.link}" onclick="copyLink(this)">📋 Salin Link</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== HELPERS =====
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function getColor(store) {
+  const colors = [
+    '#1a1a2e', '#16213e', '#0f3460', '#533483', '#2d4059',
+    '#111d5e', '#1b1717', '#1a1a24', '#2b2b44', '#1e2a3a',
+    '#2c1e4a', '#1a2e2a', '#2e1a1a', '#1a2e20', '#2e241a'
+  ];
+  let hash = 0;
+  for (let i = 0; i < store.length; i++) {
+    hash = store.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+}
+
+function copyLink(btn) {
+  const link = btn.dataset.link;
+  navigator.clipboard.writeText(link).then(() => {
+    btn.textContent = '✅ Tersalin!';
+    btn.classList.add('copied');
+    showToast('✅ Link afiliasi disalin!');
+    setTimeout(() => {
+      btn.textContent = '📋 Salin Link';
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = link;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    showToast('✅ Link afiliasi disalin!');
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ===== EVENTS =====
+document.getElementById('searchInput').addEventListener('input', render);
+
+document.querySelectorAll('#priceFilter .filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#priceFilter .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  });
+});
+
+document.getElementById('sortSelect').addEventListener('change', render);
+
+document.addEventListener('click', e => {
+  const chip = e.target.closest('.store-chip');
+  if (chip) {
+    activeStore = chip.dataset.store;
+    render();
+  }
+});
+
+// ===== INIT =====
+loadData();
+</script>
+</body>
+</html>
