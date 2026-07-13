@@ -195,9 +195,20 @@ header {
   position: relative;
 }
 .card-thumb img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: 2;
+}
+.thumb-letter {
+  position: absolute;
+  z-index: 1;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text2);
+  opacity: .4;
 }
 .card-body { flex: 1; }
 .card-name {
@@ -343,12 +354,8 @@ header {
 
 <!-- FILTERS -->
 <div class="filters">
-  <div class="filter-group" id="priceFilter">
+  <div class="filter-group" id="categoryFilter">
     <button class="filter-btn active" data-value="all">Semua</button>
-    <button class="filter-btn" data-value="under50">&lt; Rp50RB</button>
-    <button class="filter-btn" data-value="50-200">Rp50-200RB</button>
-    <button class="filter-btn" data-value="200-500">Rp200-500RB</button>
-    <button class="filter-btn" data-value="over500">&gt; Rp500RB</button>
   </div>
   <select class="sort-select" id="sortSelect">
     <option value="default">Urut: Default</option>
@@ -375,6 +382,7 @@ header {
 let allProducts = [];
 let filteredProducts = [];
 let activeStore = 'all';
+let activeCategory = 'all';
 
 // ===== PARSE INDONESIAN NUMBERS =====
 function parseIDNumber(str) {
@@ -441,7 +449,7 @@ async function loadData() {
 // ===== RENDER =====
 function render() {
   const search = document.getElementById('searchInput').value.toLowerCase().trim();
-  const priceFilter = document.querySelector('#priceFilter .active')?.dataset?.value || 'all';
+  const categoryFilter = document.querySelector('#categoryFilter .active')?.dataset?.value || 'all';
   const sort = document.getElementById('sortSelect').value;
 
   filteredProducts = allProducts.filter(p => {
@@ -449,14 +457,8 @@ function render() {
     if (search && !p.name.toLowerCase().includes(search) && !p.store.toLowerCase().includes(search)) return false;
     // Store filter
     if (activeStore !== 'all' && p.store !== activeStore) return false;
-    // Price filter
-    if (priceFilter !== 'all') {
-      const n = p._priceNum;
-      if (priceFilter === 'under50' && (n >= 50000 || n === 0)) return false;
-      if (priceFilter === '50-200' && (n < 50000 || n >= 200000)) return false;
-      if (priceFilter === '200-500' && (n < 200000 || n >= 500000)) return false;
-      if (priceFilter === 'over500' && n < 500000) return false;
-    }
+    // Category filter
+    if (categoryFilter !== 'all' && p.category !== categoryFilter) return false;
     return true;
   });
 
@@ -477,6 +479,15 @@ function render() {
   const topComm = [...allProducts].sort((a,b) => b._commissionNum - a._commissionNum)[0];
   if (topComm) document.getElementById('topCommission').textContent = topComm.commission;
 
+  // Category chips (dynamic)
+  const cats = [...new Set(allProducts.map(p => p.category))].sort();
+  const catContainer = document.getElementById('categoryFilter');
+  catContainer.innerHTML =
+    '<button class="filter-btn' + (activeCategory === 'all' ? ' active' : '') + '" data-value="all">Semua</button>' +
+    cats.map(c =>
+      '<button class="filter-btn' + (activeCategory === c ? ' active' : '') + '" data-value="' + c.replace(/"/g, '&quot;') + '">' + c + '</button>'
+    ).join('');
+
   // Store chips
   const chipContainer = document.getElementById('storeChips');
   chipContainer.innerHTML =
@@ -495,7 +506,10 @@ function render() {
   grid.innerHTML = sorted.map(p => `
     <div class="card">
       <div class="card-thumb" style="background: ${getColor(p.store)};">
-        ${p.name.charAt(0).toUpperCase()}
+        ${p.image
+          ? `<img src="${p.image}" alt="${escHtml(p.name)}" loading="lazy" onerror="this.style.display='none'">`
+          : p.name.charAt(0).toUpperCase()}
+        <span class="thumb-letter">${p.name.charAt(0).toUpperCase()}</span>
       </div>
       <div class="card-body">
         <div class="card-name" title="${escHtml(p.name)}">${escHtml(p.name)}</div>
@@ -579,12 +593,12 @@ function showToast(msg) {
 // ===== EVENTS =====
 document.getElementById('searchInput').addEventListener('input', render);
 
-document.querySelectorAll('#priceFilter .filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#priceFilter .filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    render();
-  });
+// Category filter (delegated — buttons re-rendered each render())
+document.getElementById('categoryFilter').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  activeCategory = btn.dataset.value;
+  render();
 });
 
 document.getElementById('sortSelect').addEventListener('change', render);
