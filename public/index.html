@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,11 +20,28 @@
   --indigo:#283593;
   --indigo-deep:#1A237E;
   --indigo-soft:#EAEBF5;
+  --thumb-a:#f0ece4;
+  --thumb-b:#e6e0d6;
   --radius:14px;
   --radius-sm:9px;
   --shadow:0 1px 2px rgba(25,23,19,.04),0 8px 24px rgba(25,23,19,.06);
   --shadow-hover:0 2px 6px rgba(25,23,19,.06),0 16px 40px rgba(25,23,19,.10);
   --ease:.32s cubic-bezier(.2,.7,.3,1);
+}
+[data-theme="dark"]{
+  --paper:#100F12;
+  --card:#1B1A1F;
+  --ink:#ECE8E1;
+  --muted:#8B857C;
+  --line:#2A2930;
+  --line-strong:#3A3942;
+  --indigo:#9AA4FF;
+  --indigo-deep:#6F7BE8;
+  --indigo-soft:#1E2036;
+  --thumb-a:#232229;
+  --thumb-b:#191820;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.4);
+  --shadow-hover:0 2px 6px rgba(0,0,0,.4),0 16px 40px rgba(0,0,0,.55);
 }
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{
@@ -42,7 +59,7 @@ a{color:inherit;text-decoration:none}
 /* ===== HEADER ===== */
 header{
   position:sticky;top:0;z-index:100;
-  background:rgba(247,245,241,.82);
+  background:color-mix(in srgb,var(--paper) 82%,transparent);
   backdrop-filter:blur(14px) saturate(140%);
   border-bottom:1px solid var(--line);
 }
@@ -69,6 +86,18 @@ header{
 .search input::placeholder{color:var(--muted)}
 .search input:focus{border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft)}
 .search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted)}
+.theme-toggle{
+  flex-shrink:0;width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--line-strong);background:var(--card);
+  color:var(--ink);display:flex;align-items:center;justify-content:center;
+  transition:all var(--ease);
+}
+.theme-toggle:hover{border-color:var(--indigo);color:var(--indigo);transform:rotate(15deg)}
+.theme-toggle svg{width:18px;height:18px}
+.i-sun{display:none}
+.i-moon{display:block}
+[data-theme="dark"] .i-sun{display:block}
+[data-theme="dark"] .i-moon{display:none}
 
 /* ===== HERO ===== */
 .hero{max-width:1280px;margin:0 auto;padding:56px 24px 30px}
@@ -113,6 +142,11 @@ header{
   transition:transform var(--ease);
 }
 .tab.active::after{transform:scaleX(1)}
+.tab-count{
+  font-size:.7rem;font-weight:600;color:var(--muted);
+  background:var(--line);padding:1px 7px;border-radius:100px;margin-left:2px;
+}
+.tab.active .tab-count{background:var(--indigo-soft);color:var(--indigo)}
 .toolbar-right{display:flex;align-items:center;gap:14px}
 .count{font-size:.82rem;color:var(--muted);white-space:nowrap}
 .count b{color:var(--ink);font-weight:600}
@@ -137,7 +171,7 @@ header{
 .card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:var(--line-strong)}
 .thumb{
   position:relative;aspect-ratio:1/1;overflow:hidden;
-  background:linear-gradient(135deg,#f0ece4,#e6e0d6);
+  background:linear-gradient(135deg,var(--thumb-a),var(--thumb-b));
 }
 .thumb img{
   width:100%;height:100%;object-fit:cover;
@@ -202,6 +236,20 @@ footer{
 }
 footer b{color:var(--ink);font-family:'Space Grotesk',sans-serif}
 
+/* ===== BACK TO TOP ===== */
+.backtop{
+  position:fixed;right:22px;bottom:22px;z-index:90;
+  width:46px;height:46px;border-radius:50%;
+  border:1px solid var(--line-strong);background:var(--card);
+  color:var(--ink);display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow);cursor:pointer;
+  opacity:0;transform:translateY(14px);pointer-events:none;
+  transition:opacity var(--ease),transform var(--ease),border-color var(--ease),color var(--ease);
+}
+.backtop.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.backtop:hover{border-color:var(--indigo);color:var(--indigo)}
+.backtop svg{width:20px;height:20px}
+
 /* ===== TOAST ===== */
 .toast{
   position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);
@@ -232,6 +280,16 @@ footer b{color:var(--ink);font-family:'Space Grotesk',sans-serif}
   .card:hover .thumb img{transform:none}
 }
 </style>
+<script>
+  // Apply saved theme before paint (default: dark)
+  (function(){
+    try{
+      var t=localStorage.getItem('etalase-theme');
+      if(t==='light')document.documentElement.setAttribute('data-theme','light');
+      else document.documentElement.setAttribute('data-theme','dark');
+    }catch(e){document.documentElement.setAttribute('data-theme','dark');}
+  })();
+</script>
 </head>
 <body>
 
@@ -247,6 +305,10 @@ footer b{color:var(--ink);font-family:'Space Grotesk',sans-serif}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
       <input type="text" id="search" placeholder="Cari produk…" autocomplete="off">
     </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Ganti tema" title="Ganti tema">
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
   </div>
 </header>
 
@@ -279,6 +341,10 @@ footer b{color:var(--ink);font-family:'Space Grotesk',sans-serif}
   <b>ETALASE</b> — koleksi kurasi dari berbagai toko. Klik produk untuk melihat detail di toko aslinya.
 </footer>
 
+<button class="backtop" id="backtop" aria-label="Kembali ke atas" title="Kembali ke atas">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
 <div class="toast" id="toast">Tautan disalin</div>
 
 <script>
@@ -310,9 +376,12 @@ async function load(){
 // ===== TABS (categories) =====
 function buildTabs(){
   const cats=[...new Set(allProducts.map(p=>p.category))].sort();
+  const counts={all:allProducts.length};
+  allProducts.forEach(p=>{counts[p.category]=(counts[p.category]||0)+1;});
   const tabs=document.getElementById('tabs');
-  tabs.innerHTML='<button class="tab active" data-cat="all">Semua</button>'+
-    cats.map(c=>`<button class="tab" data-cat="${c.replace(/"/g,'&quot;')}">${c}</button>`).join('');
+  const label=(c,n)=>c+' <span class="tab-count">'+n+'</span>';
+  tabs.innerHTML='<button class="tab active" data-cat="all">'+label('Semua',counts.all)+'</button>'+
+    cats.map(c=>'<button class="tab" data-cat="'+c.replace(/"/g,'&quot;')+'">'+label(c,counts[c])+'</button>').join('');
   tabs.addEventListener('click',e=>{
     const t=e.target.closest('.tab');if(!t)return;
     activeCat=t.dataset.cat;
@@ -421,6 +490,23 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 // ===== EVENTS =====
 let t;document.getElementById('search').addEventListener('input',e=>{clearTimeout(t);t=setTimeout(()=>{searchTerm=e.target.value;page=1;update();},180);});
 document.getElementById('sort').addEventListener('change',()=>{page=1;update();});
+
+// ===== THEME TOGGLE =====
+const themeBtn=document.getElementById('themeToggle');
+themeBtn.addEventListener('click',()=>{
+  const cur=document.documentElement.getAttribute('data-theme');
+  const next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  try{localStorage.setItem('etalase-theme',next);}catch(e){}
+});
+
+// ===== BACK TO TOP =====
+const backtop=document.getElementById('backtop');
+window.addEventListener('scroll',()=>{
+  if(window.scrollY>500)backtop.classList.add('show');
+  else backtop.classList.remove('show');
+},{passive:true});
+backtop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 
 load();
 </script>
